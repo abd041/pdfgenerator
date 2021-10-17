@@ -1,6 +1,8 @@
 import "./App.css";
 import { jsPDF } from "jspdf";
 import { useState } from "react";
+import { AmiriRegular } from "./fonts";
+
 function App() {
   const [text, setText] = useState("");
 
@@ -8,18 +10,26 @@ function App() {
     setText(e.target.value);
   };
   const generatePDF = () => {
-    const doc = new jsPDF("landscape");
+    const doc = new jsPDF({
+      orientation: "landscape",
+      filters: ["ASCIIHexEncode"],
+    });
+    doc.addFileToVFS("Amiri-Regular.ttf", AmiriRegular);
+    doc.addFont("Amiri-Regular.ttf", "Amiri", "normal");
+
+    doc.setFont("Amiri"); // set font
+    doc.setFontSize(18);
 
     var splitTitle = doc.splitTextToSize(text, 270);
     var pageHeight = doc.internal.pageSize.height;
-    var y = 15;
+    var y = 7;
     for (var i = 0; i < splitTitle.length; i++) {
       if (y > 250) {
         y = 15;
         doc.addPage();
       }
       doc.text(splitTitle[i], 7, y);
-      y = y + 10;
+      y = y + 15;
     }
     doc.save("my.pdf");
   };
